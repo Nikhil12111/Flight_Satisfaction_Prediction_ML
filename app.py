@@ -7,7 +7,6 @@ with open("models/model.pkl", "rb") as f:
     model = pickle.load(f)
 
 st.title("Airline Passenger Satisfaction Prediction")
-
 st.write("Enter passenger details to predict satisfaction (Satisfied / Neutral or Dissatisfied)")
 
 # Input fields
@@ -55,6 +54,34 @@ input_data = pd.DataFrame([{
     "Class": {"Eco": 0, "Eco Plus": 1, "Business": 2}[class_type],
     **service_values
 }])
+
+# ---- IMPORTANT ENGINEERED FEATURES (required by model) ----
+
+# 1. Total Delay
+input_data["Total Delay"] = (
+    input_data["Departure Delay in Minutes"] +
+    input_data["Arrival Delay in Minutes"]
+)
+
+# 2. Average Service Rating
+service_cols = [
+    "Inflight wifi service",
+    "Departure/Arrival time convenient",
+    "Ease of Online booking",
+    "Gate location",
+    "Food and drink",
+    "Online boarding",
+    "Seat comfort",
+    "Inflight entertainment",
+    "On-board service",
+    "Leg room service",
+    "Baggage handling",
+    "Checkin service",
+    "Inflight service",
+    "Cleanliness"
+]
+
+input_data["Average Service Rating"] = input_data[service_cols].mean(axis=1)
 
 # Predict
 if st.button("Predict Satisfaction"):
